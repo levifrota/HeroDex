@@ -1,23 +1,42 @@
 <template>
   <v-app>
-    <v-container>
-      <v-container>
+    <header class="mt-5 d-flex align-center flex-column search-container">
+      <img src="./assets/hero-logo.png" alt="" />
+      <v-container class="d-flex flex-row">
         <v-text-field
           v-model="search"
           label="Search"
           placeholder="Ex: Iron Man"
           solo
+          class="search-field"
         >
         </v-text-field>
-        <v-row>
+        <v-menu transition="scroll-y-transition">
+          <template v-slot:activator="{ on, attrs }">
+            <v-btn dark class="ma-2" v-bind="attrs" v-on="on">
+              Choose an Publisher
+            </v-btn>
+          </template>
+          <v-list>
+            <v-list-item v-for="(item, i) in items" :key="i" link>
+              <v-list-item-title>{{ item.title }}</v-list-item-title>
+            </v-list-item>
+          </v-list>
+        </v-menu>
+      </v-container>
+    </header>
+
+    <v-container>
+      <v-container>
+        <v-row class="character-cols">
           <v-col
-            cols="3"
+            cols="2"
             v-for="character in filteredCharacters"
             :key="character.id"
           >
             <v-card class="character-card" @click="showCharacter(character.id)">
               <v-container>
-                <v-row class="mx-0 d-flex justify-center">
+                <v-row class="d-flex justify-center">
                   <img
                     :src="character.images.md"
                     :alt="character.name"
@@ -49,7 +68,12 @@
             <v-col cols="8" width="100%">
               <h1>{{ selectedCharacter.name }}</h1>
 
-              <div v-if="selectedCharacter.biography.fullName != ''">
+              <div
+                v-if="
+                  selectedCharacter.biography.fullName != '' &&
+                  selectedCharacter.biography.fullName != selectedCharacter.name
+                "
+              >
                 <b>Full Name: </b>
                 <v-chip> {{ selectedCharacter.biography.fullName }}</v-chip>
               </div>
@@ -103,17 +127,17 @@
           <v-chip class="ml-2"
             >Power: {{ selectedCharacter.powerstats.power }}</v-chip
           >
-
-          <v-chip class="ml-2"></v-chip>
-
-          <highcharts :options="chartOptions" ref="chart"></highcharts>
+          <div class="container">
+            <highcharts :options="chartOptions" ref="chart"></highcharts>
+          </div>
         </v-container>
       </v-card>
     </v-dialog>
 
-    <footer>
+    <v-footer class="d-flex justify-center">
       Made with&nbsp;<font-awesome-icon
         icon="fa-solid fa-heart"
+        color="red"
       />&nbsp;by&nbsp;
       <a
         href="https://www.linkedin.com/in/levifrota27/"
@@ -122,7 +146,7 @@
       >
         Gideao Frota</a
       >
-    </footer>
+    </v-footer>
   </v-app>
 </template>
 
@@ -133,7 +157,7 @@ import Highcharts from "highcharts";
 import HighchartsVue from "highcharts-vue";
 
 export default {
-  name: "MarvelDex",
+  name: "HeroDex",
 
   components: {
     // eslint-disable-next-line
@@ -148,6 +172,16 @@ export default {
       dialog: false,
       selectedCharacter: null,
       title: "",
+      items: [
+        { title: "Dark Horse Comics" },
+        { title: "DC Comics" },
+        { title: "Marvel Comics" },
+        { title: "Star Trek" },
+        { title: "Random" },
+        { title: "Star Wars" },
+        { title: "NBC" },
+        { title: "IDW Publishing" },
+      ],
     };
   },
 
@@ -162,13 +196,22 @@ export default {
     chartOptions() {
       return {
         chart: {
+          renderTo: "container",
           polar: true,
+          animation: true,
         },
         title: {
           text: `${this.selectedCharacter.name} Powerstats`,
         },
         accessibility: {
           enabled: false,
+        },
+        plotOptions: {
+          series: {
+            animation: {
+              duration: 1500,
+            },
+          },
         },
         pane: {
           startAngle: 0,
@@ -197,6 +240,10 @@ export default {
           lineWidth: 0,
           min: 0,
           max: 100,
+        },
+        tooltip: {
+          shared: true,
+          pointFormat: '<span style="color:#000"><b>{point.y:,.0f}</b><br/>',
         },
         legend: {
           enabled: false,
@@ -254,11 +301,7 @@ export default {
 
 <style scoped>
 #app {
-  background: linear-gradient(
-      to bottom right,
-      rgba(10, 10, 10, 1),
-      rgba(12, 39, 63, 1)
-    )
+  background: linear-gradient(to bottom, rgb(172, 12, 12), rgb(0, 0, 0))
     no-repeat center center fixed !important;
   -webkit-background-size: cover;
   -moz-background-size: cover;
@@ -268,19 +311,36 @@ export default {
   min-height: 100vh;
 }
 
+.search-container {
+  position: fixed !important;
+  z-index: 10;
+  width: 100%;
+  background: rgb(172, 12, 12);
+}
+
+.search-field {
+  width: 50% !important;
+}
+
+.character-cols {
+  margin-top: 5%;
+}
+
 .character-card {
   height: 100%;
 }
 
 footer {
   background: rgb(235, 218, 218);
-  display: flex;
-  justify-content: center;
 }
 
 .footer-link {
   text-decoration: none;
   font-weight: 500;
   color: #000;
+}
+
+v-list-item-title {
+  cursor: crosshair;
 }
 </style>
