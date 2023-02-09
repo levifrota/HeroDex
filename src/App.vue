@@ -1,41 +1,17 @@
 <template>
   <v-app>
-    <header class="mt-5 d-flex align-center flex-column search-container">
-      <img src="./assets/hero-logo.png" alt="" />
-      <v-container class="d-flex flex-row">
-        <v-text-field
-          v-model="search"
-          label="Search"
-          placeholder="Ex: Iron Man"
-          solo
-          class="search-field"
-        >
-        </v-text-field>
-        <v-menu transition="scroll-y-transition">
-          <template v-slot:activator="{ on, attrs }">
-            <v-btn dark class="ma-2" v-bind="attrs" v-on="on">
-              Choose an Publisher
-            </v-btn>
-          </template>
-          <v-list>
-            <v-list-item v-for="(item, i) in items" :key="i" link>
-              <v-list-item-title>{{ item.title }}</v-list-item-title>
-            </v-list-item>
-          </v-list>
-        </v-menu>
-      </v-container>
-    </header>
+    <HeroHeader />
 
     <v-container>
       <v-container>
         <v-row class="character-cols">
           <v-col
-            cols="2"
+            cols="3"
             v-for="character in filteredCharacters"
             :key="character.id"
           >
             <v-card class="character-card" @click="showCharacter(character.id)">
-              <v-container>
+              <v-container class="char-container">
                 <v-row class="d-flex justify-center">
                   <img
                     :src="character.images.md"
@@ -152,36 +128,29 @@
 
 <script>
 import axios from "axios";
+import HeroHeader from "./components/HeroHeader.vue";
 // eslint-disable-next-line no-unused-vars
 import Highcharts from "highcharts";
 import HighchartsVue from "highcharts-vue";
+import { eventBus } from "./main";
 
 export default {
   name: "HeroDex",
 
   components: {
     // eslint-disable-next-line
-    HighchartsVue
+    HighchartsVue,
+    HeroHeader,
   },
 
   data() {
     return {
       characters: [],
-      search: "",
+      searchFinal: "",
       finalSearch: undefined,
       dialog: false,
       selectedCharacter: null,
       title: "",
-      items: [
-        { title: "Dark Horse Comics" },
-        { title: "DC Comics" },
-        { title: "Marvel Comics" },
-        { title: "Star Trek" },
-        { title: "Random" },
-        { title: "Star Wars" },
-        { title: "NBC" },
-        { title: "IDW Publishing" },
-      ],
     };
   },
 
@@ -190,7 +159,7 @@ export default {
       return this.characters.filter((character) => {
         return character.name
           .toLowerCase()
-          .includes(this.search.toLowerCase().trim());
+          .includes(this.searchFinal.toLowerCase().trim());
       });
     },
     chartOptions() {
@@ -198,6 +167,7 @@ export default {
         chart: {
           renderTo: "container",
           polar: true,
+          type: "area",
           animation: true,
         },
         title: {
@@ -231,9 +201,6 @@ export default {
         },
         yAxis: {
           gridLineInterpolation: "polygon",
-          title: {
-            text: "Value",
-          },
           labels: {
             overflow: "justify",
           },
@@ -253,15 +220,7 @@ export default {
         },
         series: [
           {
-            data: [
-              this.selectedCharacter.powerstats.intelligence,
-              this.selectedCharacter.powerstats.strength,
-              this.selectedCharacter.powerstats.speed,
-              this.selectedCharacter.powerstats.durability,
-              this.selectedCharacter.powerstats.power,
-              this.selectedCharacter.powerstats.combat,
-            ],
-            pointPlacement: "on",
+            data: [],
           },
         ],
       };
@@ -295,12 +254,21 @@ export default {
 
   created() {
     this.getData();
+    eventBus.$on("search", (search) => {
+      this.searchFinal = search;
+    });
   },
 };
 </script>
 
 <style scoped>
+@font-face {
+  font-family: BatKnightRegular;
+  src: url(./assets/BatKnightRegular-51JlG.ttf) format("truetype");
+}
+
 #app {
+  /* font-family: BatKnightRegular; */
   background: linear-gradient(to bottom, rgb(172, 12, 12), rgb(0, 0, 0))
     no-repeat center center fixed !important;
   -webkit-background-size: cover;
@@ -311,23 +279,17 @@ export default {
   min-height: 100vh;
 }
 
-.search-container {
-  position: fixed !important;
-  z-index: 10;
-  width: 100%;
-  background: rgb(172, 12, 12);
-}
-
-.search-field {
-  width: 50% !important;
-}
-
 .character-cols {
-  margin-top: 5%;
+  margin-top: 15%;
 }
 
 .character-card {
   height: 100%;
+}
+
+.char-container:hover {
+  margin-top: -3%;
+  transition: 0.3s ease-out;
 }
 
 footer {

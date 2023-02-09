@@ -5,13 +5,14 @@ import "./plugins/axios";
 import App from "./App.vue";
 import vuetify from "./plugins/vuetify";
 import HighchartsVue from "highcharts-vue";
-// eslint-disable-next-line no-unused-vars
 import Highcharts from "highcharts";
+import highchartsMore from "highcharts/highcharts-more";
+// import { EventBus } from "./event-bus";
 
-// eslint-disable-next-line vue/multi-word-component-names
-Vue.component("highcharts", HighchartsVue);
+highchartsMore(Highcharts);
 Vue.config.productionTip = false;
-Vue.use(HighchartsVue);
+Vue.use(HighchartsVue, { Highcharts });
+export const eventBus = new Vue();
 
 new Vue({
   vuetify,
