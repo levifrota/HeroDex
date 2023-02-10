@@ -147,10 +147,20 @@ export default {
     return {
       characters: [],
       searchFinal: "",
-      finalSearch: undefined,
       dialog: false,
       selectedCharacter: null,
       title: "",
+      e7: [],
+      items: [
+        "Dark Horse Comics",
+        "DC Comics",
+        "Marvel Comics",
+        "Star Trek",
+        "Random",
+        "Star Wars",
+        "NBC",
+        "IDW Publishing",
+      ],
     };
   },
 
@@ -280,7 +290,7 @@ export default {
 }
 
 .character-cols {
-  margin-top: 15%;
+  margin-top: 5%;
 }
 
 .character-card {
