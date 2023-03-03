@@ -45,6 +45,17 @@ export default {
   data() {
     return {
       search: "",
+      e7: [],
+      items: [
+        "Dark Horse Comics",
+        "DC Comics",
+        "Marvel Comics",
+        "Star Trek",
+        "Random",
+        "Star Wars",
+        "NBC",
+        "IDW Publishing",
+      ],
     };
   },
 
@@ -56,7 +67,7 @@ export default {
 };
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .header-img {
   width: 100vw !important;
   height: 100% !important;

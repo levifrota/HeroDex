@@ -23,6 +23,14 @@
         ><v-chip class="ml-2">
           {{ selectedCharacter.biography.alignment }}
         </v-chip>
+        <v-expansion-panels>
+          <v-expansion-panel
+            v-for="i in 3"
+            :key="i"
+            title="Item"
+            text="selectedCharacter.appearance"
+          ></v-expansion-panel>
+        </v-expansion-panels>
         <div class="chart">
           <highCharts :options="chartOptions"></highCharts>
         </div>
@@ -32,13 +40,6 @@
     <v-container>
       {{ selectedCharacter }}
     </v-container>
-
-    <!-- <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn color="primary" text @click="dialog = false">
-            I accept
-          </v-btn>
-        </v-card-actions> -->
   </v-card>
 </template>
 

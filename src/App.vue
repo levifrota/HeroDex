@@ -7,8 +7,11 @@
         <v-row class="character-cols">
           <v-col
             cols="3"
-            v-for="character in filteredCharacters"
-            :key="character.id"
+            v-for="(character, index) in filteredCharacters.slice(
+              (page - 1) * itemsPerPage,
+              page * itemsPerPage
+            )"
+            :key="index"
           >
             <v-card class="character-card" @click="showCharacter(character.id)">
               <v-container class="char-container">
@@ -27,6 +30,10 @@
             </v-card>
           </v-col>
         </v-row>
+        <v-pagination
+          v-model="page"
+          :length="Math.ceil(filteredCharacters.length / itemsPerPage)"
+        ></v-pagination>
       </v-container>
     </v-container>
 
@@ -81,6 +88,26 @@
               </div>
             </v-col>
           </v-row>
+          <v-expansion-panels>
+            <v-expansion-panel>
+              <v-expansion-panel-header> Appearance </v-expansion-panel-header>
+              <v-expansion-panel-content>
+                <b>Gender:</b> {{ selectedCharacter.appearance.gender }}
+              </v-expansion-panel-content>
+              <v-expansion-panel-content>
+                <b>Race:</b> {{ selectedCharacter.appearance.race }}
+              </v-expansion-panel-content>
+              <v-expansion-panel-content>
+                <b>Height:</b> {{ selectedCharacter.appearance.height[1] }}
+              </v-expansion-panel-content>
+              <v-expansion-panel-content>
+                <b>Weight:</b> {{ selectedCharacter.appearance.weight[1] }}
+              </v-expansion-panel-content>
+              <v-expansion-panel-content>
+                <b>Hair Color:</b> {{ selectedCharacter.appearance.hairColor }}
+              </v-expansion-panel-content>
+            </v-expansion-panel>
+          </v-expansion-panels>
 
           <h2>Powerstats</h2>
 
@@ -150,17 +177,8 @@ export default {
       dialog: false,
       selectedCharacter: null,
       title: "",
-      e7: [],
-      items: [
-        "Dark Horse Comics",
-        "DC Comics",
-        "Marvel Comics",
-        "Star Trek",
-        "Random",
-        "Star Wars",
-        "NBC",
-        "IDW Publishing",
-      ],
+      page: 1,
+      itemsPerPage: 20,
     };
   },
 
@@ -251,6 +269,7 @@ export default {
       ];
 
       this.dialog = true;
+      console.log(this.selectedCharacter);
     },
 
     getData() {
@@ -266,12 +285,13 @@ export default {
     this.getData();
     eventBus.$on("search", (search) => {
       this.searchFinal = search;
+      this.page = 1;
     });
   },
 };
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 @font-face {
   font-family: BatKnightRegular;
   src: url(./assets/BatKnightRegular-51JlG.ttf) format("truetype");
@@ -279,8 +299,9 @@ export default {
 
 #app {
   /* font-family: BatKnightRegular; */
-  background: linear-gradient(to bottom, rgb(172, 12, 12), rgb(0, 0, 0))
-    no-repeat center center fixed !important;
+  /* background: linear-gradient(to bottom, rgb(172, 12, 12), rgb(0, 0, 0))
+    no-repeat center center fixed !important; */
+  background: #000;
   -webkit-background-size: cover;
   -moz-background-size: cover;
   -o-background-size: cover;
@@ -298,8 +319,8 @@ export default {
 }
 
 .char-container:hover {
-  margin-top: -3%;
-  transition: 0.3s ease-out;
+  margin-top: -1rem;
+  transition: 0.3s ease;
 }
 
 footer {
