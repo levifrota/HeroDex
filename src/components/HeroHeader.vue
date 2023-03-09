@@ -1,20 +1,27 @@
 <template>
-  <header class="mb-8 d-flex align-center flex-column header-container">
-    <v-img class="header-img" src="../../public/heroes-panoramic.png"></v-img>
-    <v-container class="d-flex align-center flex-column title-container">
-      <h1 class="d-flex align-center head-title">HERO DEX</h1>
-      <h2 class="d-flex align-center head-subtitle">
-        The 'Pokedex' of Heroes!
-      </h2>
-    </v-container>
+  <v-card flat height="200px" tile class="mb-10">
+    <v-toolbar
+      prominent
+      width="100%"
+      height="200px"
+      class="d-flex justify-center align-center header-container"
+    >
+      <h1>Hero Dex</h1>
+    </v-toolbar>
+
     <v-container class="d-flex flex-row search-container">
+      <v-btn icon @click="toggle_dark_mode">
+        <v-icon v-if="$vuetify.theme.dark === true"
+          >mdi-white-balance-sunny</v-icon
+        >
+        <v-icon v-if="$vuetify.theme.dark === false">mdi-weather-night</v-icon>
+      </v-btn>
       <v-text-field
         v-model="search"
         label="Search"
         placeholder="Ex: Iron Man"
         single-line
         outlined
-        dark
         class="search-field"
         @input="handleInput"
         sm="5"
@@ -28,12 +35,11 @@
           label="Select a Publisher"
           multiple
           chips
-          dark
           persistent-hint
         ></v-select>
       </v-col>
     </v-container>
-  </header>
+  </v-card>
 </template>
 
 <script>
@@ -63,43 +69,45 @@ export default {
     handleInput() {
       eventBus.$emit("search", this.search);
     },
+    toggle_dark_mode() {
+      this.$vuetify.theme.dark = !this.$vuetify.theme.dark;
+      localStorage.setItem("dark_theme", this.$vuetify.theme.dark.toString());
+      console.log(this.$vuetify.theme.dark);
+    },
+  },
+  mounted() {
+    const theme = localStorage.getItem("dark_theme");
+    if (theme) {
+      if (theme === "true") {
+        this.$vuetify.theme.dark = true;
+      } else {
+        this.$vuetify.theme.dark = false;
+      }
+    } else if (
+      window.matchMedia &&
+      window.matchMedia("(prefers-color-scheme: dark)").matches
+    ) {
+      this.$vuetify.theme.dark = true;
+      localStorage.setItem("dark_theme", this.$vuetify.theme.dark.toString());
+    }
   },
 };
 </script>
 
 <style lang="scss" scoped>
-.header-img {
-  width: 100vw !important;
-  height: 100% !important;
+@font-face {
+  font-family: RaiderCrusaderExpanded;
+  src: url(../assets/raider-crusader-font/RaiderCrusaderExpanded-jzyv.otf)
+    format("truetype");
 }
 
-.head-title {
-  font-family: BatKnightRegular;
-  font-size: 8rem;
-  font-weight: 300;
-  height: 55%;
-  padding: 0 0.5% 0.5% 0.5%;
-  background: rgba(255, 255, 255, 0.25);
-  border-radius: 5px 5px 0 0;
+h1 {
+  font-family: RaiderCrusaderExpanded;
+  font-size: 5vw;
 }
 
-.head-subtitle {
-  font-family: BatKnightRegular;
-  font-size: 4rem;
-  font-weight: 300;
-  background: rgba(255, 255, 255, 0.25);
-  height: 30%;
-  border-radius: 5px;
-}
-
-.title-container {
-  position: absolute;
-  color: #fff;
-}
-
-.header-container {
-  z-index: 10;
-  height: 45vh;
+.v-toolbar__content {
+  width: 100%;
 }
 
 .search-container {
@@ -107,12 +115,8 @@ export default {
 }
 
 .search-field {
-  color: #fff !important;
   width: 50% !important;
   display: flex;
   align-items: center;
-}
-.publisher {
-  color: #fff !important;
 }
 </style>

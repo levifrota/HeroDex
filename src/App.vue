@@ -6,7 +6,7 @@
       <v-container>
         <v-row class="character-cols">
           <v-col
-            cols="3"
+            :cols="responsiveCards(colsPerLine)"
             v-for="(character, index) in filteredCharacters.slice(
               (page - 1) * itemsPerPage,
               page * itemsPerPage
@@ -23,8 +23,13 @@
                   />
                 </v-row>
                 <h2 class="text-center mt-2">{{ character.name }}</h2>
-                <p class="text-center">
-                  {{ character.biography.firstAppearance }}
+                <p
+                  v-if="character.biography.firstAppearance != '-'"
+                  class="text-center"
+                >
+                  <b>First Appearance: </b><br />{{
+                    character.biography.firstAppearance
+                  }}
                 </p>
               </v-container>
             </v-card>
@@ -33,6 +38,7 @@
         <v-pagination
           v-model="page"
           :length="Math.ceil(filteredCharacters.length / itemsPerPage)"
+          :total-visible="7"
         ></v-pagination>
       </v-container>
     </v-container>
@@ -88,26 +94,41 @@
               </div>
             </v-col>
           </v-row>
+
+          <v-divider class="my-4"> </v-divider>
+
+          <h2>Character Info</h2>
+
           <v-expansion-panels>
             <v-expansion-panel>
               <v-expansion-panel-header> Appearance </v-expansion-panel-header>
               <v-expansion-panel-content>
                 <b>Gender:</b> {{ selectedCharacter.appearance.gender }}
               </v-expansion-panel-content>
-              <v-expansion-panel-content>
+              <v-expansion-panel-content
+                v-if="selectedCharacter.appearance.race != null"
+              >
                 <b>Race:</b> {{ selectedCharacter.appearance.race }}
               </v-expansion-panel-content>
-              <v-expansion-panel-content>
+              <v-expansion-panel-content
+                v-if="selectedCharacter.appearance.height[1] != '0 cm'"
+              >
                 <b>Height:</b> {{ selectedCharacter.appearance.height[1] }}
               </v-expansion-panel-content>
-              <v-expansion-panel-content>
+              <v-expansion-panel-content
+                v-if="selectedCharacter.appearance.weight[1] != '0 kg'"
+              >
                 <b>Weight:</b> {{ selectedCharacter.appearance.weight[1] }}
               </v-expansion-panel-content>
-              <v-expansion-panel-content>
+              <v-expansion-panel-content
+                v-if="selectedCharacter.appearance.hairColor != '-'"
+              >
                 <b>Hair Color:</b> {{ selectedCharacter.appearance.hairColor }}
               </v-expansion-panel-content>
             </v-expansion-panel>
           </v-expansion-panels>
+
+          <v-divider class="my-4"> </v-divider>
 
           <h2>Powerstats</h2>
 
@@ -179,6 +200,9 @@ export default {
       title: "",
       page: 1,
       itemsPerPage: 20,
+      screenWidth: null,
+      screenHeight: null,
+      colsPerLine: 3,
     };
   },
 
@@ -279,6 +303,18 @@ export default {
           this.characters = response.data;
         });
     },
+
+    responsiveCards() {
+      if (this.screenWidth <= 768 && this.screenWidth >= 376) {
+        this.colsPerLine = 6;
+        console.log(this.colsPerLine);
+      }
+      if (this.screenWidth <= 375) {
+        this.colsPerLine = 10;
+        console.log(this.colsPerLine);
+      }
+      return this.colsPerLine;
+    },
   },
 
   created() {
@@ -287,34 +323,19 @@ export default {
       this.searchFinal = search;
       this.page = 1;
     });
+    this.screenWidth = window.innerWidth;
+    this.screenHeight = window.innerHeight;
   },
 };
 </script>
 
 <style lang="scss" scoped>
-@font-face {
-  font-family: BatKnightRegular;
-  src: url(./assets/BatKnightRegular-51JlG.ttf) format("truetype");
-}
-
-#app {
-  /* font-family: BatKnightRegular; */
-  /* background: linear-gradient(to bottom, rgb(172, 12, 12), rgb(0, 0, 0))
-    no-repeat center center fixed !important; */
-  background: #000;
-  -webkit-background-size: cover;
-  -moz-background-size: cover;
-  -o-background-size: cover;
-  background-size: cover !important;
-  background-position: center;
-  min-height: 100vh;
-}
-
 .character-cols {
   margin-top: 5%;
 }
 
 .character-card {
+  padding-top: 5%;
   height: 100%;
 }
 
@@ -323,14 +344,9 @@ export default {
   transition: 0.3s ease;
 }
 
-footer {
-  background: rgb(235, 218, 218);
-}
-
 .footer-link {
   text-decoration: none;
   font-weight: 500;
-  color: #000;
 }
 
 v-list-item-title {
