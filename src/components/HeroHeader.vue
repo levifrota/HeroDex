@@ -16,7 +16,7 @@
         >
         <v-icon v-if="$vuetify.theme.dark === false">mdi-weather-night</v-icon>
       </v-btn>
-      <v-text-field
+      <v-input
         v-model="search"
         label="Search"
         placeholder="Ex: Iron Man"
@@ -26,7 +26,7 @@
         @input="handleInput"
         sm="5"
       >
-      </v-text-field>
+      </v-input>
       <v-col sm="5" class="pt-0">
         <v-select
           class="publisher"

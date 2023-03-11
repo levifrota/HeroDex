@@ -152,7 +152,26 @@
             >Power: {{ selectedCharacter.powerstats.power }}</v-chip
           >
           <div class="container">
-            <highcharts :options="chartOptions" ref="chart"></highcharts>
+            <highcharts
+              :options="chartOptions"
+              ref="chart"
+              v-if="$vuetify.theme.dark === true"
+              :style="{
+                '--primary-color': darkColors.primaryColor,
+                '--secondary-color': darkColors.secondaryColor,
+                '--tertiary-color': darkColors.tertiaryColor,
+              }"
+            ></highcharts>
+            <highcharts
+              :options="chartOptions"
+              ref="chart"
+              v-if="$vuetify.theme.dark === false"
+              :style="{
+                '--primary-color': lightColors.primaryColor,
+                '--secondary-color': lightColors.secondaryColor,
+                '--tertiary-color': lightColors.tertiaryColor,
+              }"
+            ></highcharts>
           </div>
         </v-container>
       </v-card>
@@ -203,6 +222,16 @@ export default {
       screenWidth: null,
       screenHeight: null,
       colsPerLine: 3,
+      lightColors: {
+        primaryColor: "#0066cc",
+        secondaryColor: "#0088cc",
+        tertiaryColor: "#0099cc",
+      },
+      darkColors: {
+        primaryColor: "#6DBEEB",
+        secondaryColor: "#E5323E",
+        tertiaryColor: "#9ACD32",
+      },
     };
   },
 
@@ -337,11 +366,35 @@ export default {
 .character-card {
   padding-top: 5%;
   height: 100%;
+  transition: ease 0.3s;
 }
 
-.char-container:hover {
+.character-card:hover {
   margin-top: -1rem;
-  transition: 0.3s ease;
+}
+
+.highcharts-container {
+  --primary-color: #0072c6;
+  --secondary-color: #008cba;
+  --tertiary-color: #f7931e;
+}
+
+.dark .highcharts-container {
+  --primary-color: #6dbeeb;
+  --secondary-color: #e5323e;
+  --tertiary-color: #9acd32;
+}
+
+.highcharts-series-0 {
+  color: var(--primary-color);
+}
+
+.highcharts-series-1 {
+  color: var(--secondary-color);
+}
+
+.highcharts-series-2 {
+  color: var(--tertiary-color);
 }
 
 .footer-link {
